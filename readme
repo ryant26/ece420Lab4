@@ -1,0 +1,40 @@
+# ECE 420 Lab 3
+## Authors: Jared Cuglietta (1282916), Ryan Thornhill (1304096)
+
+## Info
+This is a multithreaded implementation of the asynchronous Gauss-Jordan elimination 
+
+## How to build:
+From the main directory run 'make' to generate the main executable in the root directory.
+
+From the main directory run `make all`. This will create all executables in the bin directory.
+You can also run make clean all. To perform a rebuild.
+
+## How to run:
+From the main directory run `./main <number of threads>` or 'bin/main <number of threads>' depending on which make target was run
+
+## Other notes:
+See readme in sdk directory on how to generate matrix input file, and test results.
+
+
+#Responsibilities
+
+<Person 1>
+1. Majority implementation (extra time outside of lab)
+2. Description of Implementation
+3. Bottom section of Performance discussion
+	a. Why the results were the way they were
+4. Conclusion and Experiences
+5. Compress the final submission, hand in the hard copy report
+
+<Person 2>
+1. Some implementation (only in lab)
+2. Testing in the report, and of the implementation
+3. All statistics gathering
+	a. Running all tests on lab machines
+	b. Compiling statistics into excel
+	c. Generating Speedup and Efficiency charts
+	d. Inserting Raw data and charts into report appendix
+4. Top section of Performance discussion 
+	a. How the stastics gathering was performed
+	b. analysis of charts 
