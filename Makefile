@@ -1,4 +1,4 @@
-CC := gcc
+CC := mpicc
 CFLAGS := -lm -Wall
 
 VPATH = src:sdk
@@ -17,9 +17,6 @@ submission: $(BUILDDIR)/main.o $(BUILDDIR)/utilities.o $(BUILDDIR)/Lab3IO.o
 
 main: $(BUILDDIR)/main.o $(BUILDDIR)/Lab4_IO.o
 	$(CC) -o $(BIN)/main $^ $(CFLAGS)
-
-serialmain: $(BUILDDIR)/serialmain.o $(BUILDDIR)/utilities.o  $(BUILDDIR)/Lab3IO.o
-	$(CC) -o $(BIN)/serialmain $^ $(CFLAGS)
 
 datatrim: build/datatrim.o Lab4_IO.o
 	$(CC) -o $(BIN)/datatrim $^
