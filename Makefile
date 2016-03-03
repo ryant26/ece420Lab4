@@ -15,7 +15,7 @@ $(BUILDDIR)/%.o: %.c
 submission: $(BUILDDIR)/main.o $(BUILDDIR)/utilities.o $(BUILDDIR)/Lab3IO.o
 	$(CC) -o main $^ $(CFLAGS)
 
-main: $(BUILDDIR)/main.o $(BUILDDIR)/Lab4_IO.o
+main: $(BUILDDIR)/main.o $(BUILDDIR)/Lab4_IO.o $(BUILDDIR)/utilities.o
 	$(CC) -o $(BIN)/main $^ $(CFLAGS)
 
 datatrim: build/datatrim.o Lab4_IO.o
