@@ -1,5 +1,5 @@
 CC := gcc
-CFLAGS := -fopenmp -lm -Wall
+CFLAGS := -lm -Wall
 
 VPATH = src:sdk
 BUILDDIR = build
@@ -7,7 +7,7 @@ BIN = bin
 
 default: checkdirs submission
 
-all: checkdirs datagen serialtester main
+all: checkdirs datatrim main
 
 $(BUILDDIR)/%.o: %.c
 	$(CC) -c -o $@ $< $(CFLAGS)
@@ -15,14 +15,14 @@ $(BUILDDIR)/%.o: %.c
 submission: $(BUILDDIR)/main.o $(BUILDDIR)/utilities.o $(BUILDDIR)/Lab3IO.o
 	$(CC) -o main $^ $(CFLAGS)
 
-main: $(BUILDDIR)/main.o $(BUILDDIR)/utilities.o  $(BUILDDIR)/Lab3IO.o
+main: $(BUILDDIR)/main.o $(BUILDDIR)/Lab4_IO.o
 	$(CC) -o $(BIN)/main $^ $(CFLAGS)
 
 serialmain: $(BUILDDIR)/serialmain.o $(BUILDDIR)/utilities.o  $(BUILDDIR)/Lab3IO.o
 	$(CC) -o $(BIN)/serialmain $^ $(CFLAGS)
 
-datagen: $(BUILDDIR)/Lab3IO.o build/datagen.o
-	$(CC) -o $(BIN)/datagen $^
+datatrim: build/datatrim.o Lab4_IO.o
+	$(CC) -o $(BIN)/datatrim $^
 
 serialtester: build/Lab3IO.o build/serialtester.o 
 	$(CC) -o $(BIN)/serialtester $^ $(CFLAGS)
