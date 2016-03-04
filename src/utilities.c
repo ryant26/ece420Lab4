@@ -2,12 +2,12 @@
 #include <stdio.h>
 #include <string.h>
 
-
 double** init_edge_matrix(char* file){
 	FILE *fp;
 	double size;
 	int from_node,to_node;
 	double ** edge_matrix;
+
 	if ((fp = fopen(file,"r")) == NULL){
         	printf("Fail to open file. \n");
         	exit(1);
