@@ -1,5 +1,5 @@
 CC := mpicc
-CFLAGS := -lm -Wall
+CFLAGS := -lm -Wall -Wno-unused-result
 
 VPATH = src:sdk
 BUILDDIR = build

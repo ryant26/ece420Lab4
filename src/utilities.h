@@ -1,6 +1,6 @@
 #ifndef UTILITIES_H
 #define UTILITIES_H
 
-void init_edge_matrix(char*, double ***);
+double** init_edge_matrix(char*);
 
 #endif

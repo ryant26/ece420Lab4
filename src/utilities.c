@@ -3,17 +3,28 @@
 
 
 
-void init_edge_matrix(char* file, double *** edge_matrix){
+double** init_edge_matrix(char* file){
 	FILE *fp;
-	int size,from_node,to_node;
+	double size;
+	int from_node,to_node;
+	double ** edge_matrix;
 	if ((fp = fopen(file,"r")) == NULL){
         	printf("Fail to open file. \n");
         	exit(1);
     	}
-	fscanf(fp,"%d\n",&size);
-
+	fscanf(fp,"%lf\n",&size);
+	printf("Mallocing Memory\n");
+	edge_matrix = malloc(size* sizeof(double*));
+	int i;
+	for (i=0;i<size;i++){
+		edge_matrix[i] = malloc(size * sizeof(double));
+	}
+	printf("Malloc Complete\n");
+	printf("Importing edges into edge matrix\n");
 	while(!feof(fp)){
         fscanf(fp, "%d\t%d\n", &from_node, &to_node);
-	*edge_matrix[from_node][to_node] = 1/5;
+	edge_matrix[from_node][to_node] = (double)1/(size);
     	}
+	printf("Edge import complete\n");
+	return edge_matrix;
 }
