@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
-
+#include <string.h>
 
 
 double** init_edge_matrix(char* file){
@@ -19,6 +19,8 @@ double** init_edge_matrix(char* file){
 	for (i=0;i<size;i++){
 		edge_matrix[i] = malloc(size * sizeof(double));
 	}
+	memset(edge_matrix[0],0,size*size*sizeof(double));
+
 	printf("Malloc Complete\n");
 	printf("Importing edges into edge matrix\n");
 	while(!feof(fp)){
@@ -26,5 +28,6 @@ double** init_edge_matrix(char* file){
 	edge_matrix[from_node][to_node] = (double)1/(size);
     	}
 	printf("Edge import complete\n");
+	fclose(fp);
 	return edge_matrix;
 }
