@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#define DEBUG 1
+#define DEBUG 0
 
 void init_edge_matrix(double ***A, int* size){
 	FILE *fp;
