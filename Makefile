@@ -19,7 +19,7 @@ main: $(BUILDDIR)/main.o $(BUILDDIR)/Lab4_IO.o $(BUILDDIR)/utilities.o
 	$(CC) -o $(BIN)/main $^ $(CFLAGS)
 
 datatrim: build/datatrim.o Lab4_IO.o
-	$(CC) -o $(BIN)/datatrim $^
+	$(CC) -o $(BIN)/datatrim $^ $(CFLAGS)
 
 serialtester: build/Lab3IO.o build/serialtester.o 
 	$(CC) -o $(BIN)/serialtester $^ $(CFLAGS)
