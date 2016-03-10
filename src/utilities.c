@@ -1,33 +1,34 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#define DEBUG 1
 
-double** init_edge_matrix(char* file){
+void init_edge_matrix(double ***A, int* size){
 	FILE *fp;
-	double size;
 	int from_node,to_node;
-	double ** edge_matrix;
+	double **edge_matrix;
 
-	if ((fp = fopen(file,"r")) == NULL){
+	if ((fp = fopen("data_input","r")) == NULL){
         	printf("Fail to open file. \n");
         	exit(1);
     	}
-	fscanf(fp,"%lf\n",&size);
-	printf("Mallocing Memory\n");
-	edge_matrix = malloc(size* sizeof(double*));
+	fscanf(fp,"%d\n",size);
+	if (DEBUG) printf("Mallocing Memory\n");
+	edge_matrix = malloc((*size)* sizeof(double*));
 	int i;
-	for (i=0;i<size;i++){
-		edge_matrix[i] = malloc(size * sizeof(double));
+	for (i=0;i<*size;i++){
+		edge_matrix[i] = malloc((*size) * sizeof(double));
 	}
-	memset(edge_matrix[0],0,size*size*sizeof(double));
+	memset(edge_matrix[0],0,(*size)*(*size)*sizeof(double));
 
-	printf("Malloc Complete\n");
-	printf("Importing edges into edge matrix\n");
+	if (DEBUG) printf("Malloc Complete\n");
+	if (DEBUG) printf("Importing edges into edge matrix\n");
 	while(!feof(fp)){
         fscanf(fp, "%d\t%d\n", &from_node, &to_node);
-	edge_matrix[from_node][to_node] = (double)1/(size);
+	edge_matrix[from_node][to_node] = (double)1/(*size);
     	}
-	printf("Edge import complete\n");
+	if (DEBUG) printf("Edge import complete\n");
 	fclose(fp);
-	return edge_matrix;
+
+	*A = edge_matrix;
 }
