@@ -25,7 +25,7 @@ void init_edge_matrix(int **A, int* size){
 	if (DEBUG) printf("Mallocing Memory\n");
 
 	// Allocate memory for array;
-	*A = calloc((*size) * (*size), sizeof(double));
+	*A = calloc((*size) * (*size), sizeof(int));
 
 	if (DEBUG) printf("Importing edges into edge matrix\n");
 

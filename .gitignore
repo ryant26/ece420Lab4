@@ -38,3 +38,7 @@ bin/
 
 #Python
 __pycache__
+
+#IDEA
+.idea/
+CMakeLists.txt
