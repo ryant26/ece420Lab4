@@ -20,8 +20,8 @@ int main(int argc, char * argv[]){
 
 	// Read graph data into memory
 	// Will be distributed across processes
-	init_edge_matrix(&graph, &size);
-	rank_vector = init_rank_vector(size);
+	// init_edge_matrix(&graph, &size);
+	// rank_vector = init_rank_vector(size);
 
 	MPI_Init(&argc, &argv);
 
@@ -29,49 +29,80 @@ int main(int argc, char * argv[]){
 	MPI_Comm_size(MPI_COMM_WORLD, &threads);
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
+	// Read in the matrix and give each proc all the info it needs
+	if (rank == MASTER){
+		if (DEBUG_MAIN) printf("Reading in matrix\n");
+		init_edge_matrix(&graph, &size);
+		if (DEBUG_MAIN) printf("Finished reading in matrix\n");
+
+	} 
+
+	//Broadcast the size to all processes
+	MPI_Bcast(&size, 1, MPI_INT, MASTER, MPI_COMM_WORLD);
+
+	// All processes init a rank_vector size = # nodes
+	rank_vector = init_rank_vector(size);	
+	rows_per_thread = size / threads;
+
+	// Only the master holds the entire matrix (representing the graph)
+	// Thus all other processes init a matrix, size = total rows / threads = rows_per_thread
+	if (rank != MASTER){
+		graph = malloc(size * rows_per_thread * sizeof(int));
+	}
+
+	// Now we scatter the original matrix (Representing the graph)
+	// to all processes
+	int send_count = size * rows_per_thread;
+
+	if (rank == MASTER){
+		MPI_Scatter(graph, send_count, MPI_INT,
+				MPI_IN_PLACE, send_count, MPI_INT, MASTER, MPI_COMM_WORLD);	
+	} else {
+		MPI_Scatter(MPI_IN_PLACE, send_count, MPI_INT,
+				graph, send_count, MPI_INT, MASTER, MPI_COMM_WORLD);	
+	}
+
 	//Initialize looping variables
 	int above_threshold = 1;
-	rows_per_thread = size / threads;
-	double *prevous_rank_vector = init_process_rank_vector(rank, rows_per_thread, 1);
-	double *iteration_rank_results = init_process_rank_vector(rank, rows_per_thread, 1);
+	
+	double *prevous_rank_vector = init_process_rank_vector(rows_per_thread, 1);
+	double *iteration_rank_results = init_process_rank_vector(rows_per_thread, 1);
 
-	int j;
+	int i;
 
 	while ( above_threshold ){
 		// Reset the continue condition
 		above_threshold = 0;
 
-		// Iterate over the nodes (Columns) in the matrix this process is responsible for
-		for(j = rank * rows_per_thread; j < (rank+1) * rows_per_thread; j++){
-			
-			int normalized_j = j % (rows_per_thread);
-			
+		// Iterate over the nodes (Rows) in the matrix this process is responsible for
+		for(i = 0; i < rows_per_thread; i++){
+						
 			// Check the stopping threshold
-			if ( (fabs(rank_vector[j] - prevous_rank_vector[normalized_j]) 
-				/ fabs(prevous_rank_vector[normalized_j])) > E){
+			if ( (fabs(rank_vector[(rank * rows_per_thread) + i] - prevous_rank_vector[i]) 
+				/ fabs(prevous_rank_vector[i])) > E){
 
 				// Set continue condition
 				above_threshold = 1;
 
 				double rank_sum = 0;
-				int i;
+				int j;
 				int outgoing_edges = 0;
 
 				// Move down the column and add nodes which have an edge to us
 				// rank_sum = sum(rank(i)/L(i))
-				for (i = 0; i < size; i++){
-					if ( (outgoing_edges = getValue(graph, size, i, j)) ){
-						rank_sum += rank_vector[i]/outgoing_edges;
+				for (j = 0; j < size; j++){
+					if ( (outgoing_edges = graph[(i * size) + j]) ){
+						rank_sum += rank_vector[j] / outgoing_edges;
 					}
 				}
 
 				// Update previouse rank
-				prevous_rank_vector[normalized_j] = rank_vector[j];
+				prevous_rank_vector[i] = rank_vector[(rank * rows_per_thread) + i];
 				
 				// Calculate new rank
 				rank_sum *= D;
 				rank_sum += (1-D) * 1/size;
-				iteration_rank_results[normalized_j] = rank_sum;
+				iteration_rank_results[i] = rank_sum;
 			}
 		}
 		
@@ -80,19 +111,13 @@ int main(int argc, char * argv[]){
 						rank_vector, rows_per_thread, MPI_DOUBLE, MPI_COMM_WORLD);
 	}
 
-	// Wait for all proceses to complete
-	MPI_Barrier(MPI_COMM_WORLD);
-
-	// Sync final results
-	MPI_Allgather(iteration_rank_results, rows_per_thread, MPI_DOUBLE,		
-		rank_vector, rows_per_thread, MPI_DOUBLE, MPI_COMM_WORLD);
-
 	if(rank == MASTER){
 		Lab4_saveoutput(rank_vector, size, 10);
 	}
 
 	MPI_Finalize();
-	printf("All done!\n");
+	free(rank_vector);
+	free(graph);
 
 	return 0;
 }
@@ -107,7 +132,7 @@ double * init_rank_vector(int size){
 	return vect;
 }
 
-double * init_process_rank_vector(int process_rank, int nodes_proc, double value){
+double * init_process_rank_vector(int nodes_proc, double value){
 	double * vect = malloc(nodes_proc * sizeof(double));
 	int i;
 	for (i =0; i < nodes_proc; i++){

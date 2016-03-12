@@ -31,7 +31,7 @@ void init_edge_matrix(int **A, int* size){
 
 	while(!feof(fp)){
         fscanf(fp, "%d\t%d\n", &from_node, &to_node);
-		setValue(*A, *size, from_node, to_node, 1);
+		setValue(*A, *size, to_node, from_node, 1);
 
 		if (DEBUG) printf("Updating edge count\n");
 		edge_counts[from_node]++;
@@ -40,11 +40,9 @@ void init_edge_matrix(int **A, int* size){
    	//Insert edge counts
 	if (DEBUG) printf("Inserting edge counts\n");
 
-   	int rows = -1;
    	int i;
    	for (i = 0; i < *size * *size; i++){
-   		if (i % *size == 0) rows++;
-   		if ((*A)[i] == 1) (*A)[i] = edge_counts[rows];
+   		if ((*A)[i] == 1) (*A)[i] = edge_counts[i % *size];
    	}
 
 	if (DEBUG) printf("Edge import complete\n");

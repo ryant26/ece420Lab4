@@ -2,10 +2,10 @@ from subprocess import call
 from subprocess import check_output
 
 def run_datagen(problem_size):
-	call(["../bin/datagen", "-s", str(problem_size)])
+	call(["../bin/datatrim"])
 
 def run_main(threads):
-	call(["../bin/main", str(threads)])
+	call(["mpirun", "-np", str(threads), "../bin/main"])
 
 def run_serialtester():
 	call(["../bin/serialtester"])

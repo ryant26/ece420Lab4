@@ -6,13 +6,12 @@ def print_problem_header(problem_size):
 	print("==========================================")
 
 def perform_run(problem_Size):
-	print_problem_header(problem_Size)
-	common.run_datagen(problem_Size)
+	print_problem_header(problem_Size)	
 	all_correct = True
 
 	for i in range(1,problem_Size+1):
 		if (problem_Size % i == 0):
-			common.run_main(problem_Size)
+			common.run_main(i)
 			if (common.is_result_correct()):
 				out = "Correct"
 			else:
@@ -40,5 +39,7 @@ def perform_multiple_sizes(sizes):
 	else:
 		print("There were failures!!!!")
 
-perform_multiple_sizes([3, 5, 10, 15, 20, 30, 40, 50, 100, 100, 100, 200, 300])
+# perform_multiple_sizes([3, 5, 10, 15, 20, 30, 40, 50, 100, 100, 100, 200, 300])
+common.run_datagen(1112)
+perform_run(1112)
 common.cleanup()
