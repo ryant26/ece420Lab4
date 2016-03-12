@@ -14,8 +14,8 @@
 #define DEBUG_MAIN  1
 
 int main(int argc, char * argv[]){
-	int threads, rank, size, rows_per_thread;
-	double* graph, *rank_vector;
+	int threads, rank, size, rows_per_thread, *graph;
+	double* rank_vector;
 
 	// Read graph data into memory
 	// Will be distributed across processes
@@ -45,8 +45,8 @@ int main(int argc, char * argv[]){
 			int normalized_j = j % (rows_per_thread);
 			
 			// Check the stopping threshold
-			if ( (abs(rank_vector[j] - prevous_rank_vector[normalized_j]) 
-				/ abs(prevous_rank_vector[normalized_j])) > E){
+			if ( (fabs(rank_vector[j] - prevous_rank_vector[normalized_j]) 
+				/ fabs(prevous_rank_vector[normalized_j])) > E){
 
 				// Set continue condition
 				above_threshold = 1;
@@ -73,7 +73,7 @@ int main(int argc, char * argv[]){
 			}
 		}
 
-		int pointer_offset = rank * rows_per_thread * sizeof(double);
+		long pointer_offset = rank * rows_per_thread * sizeof(double);
 		
 		// Sync results
 		MPI_Allgather(rank_vector + pointer_offset, rows_per_thread, MPI_DOUBLE,
@@ -81,19 +81,6 @@ int main(int argc, char * argv[]){
 	}
 
 	return 0;
-}
-
-void init_row_buffer(double ***A, int row_size, int rows){
-	if (DEBUG_MAIN)printf("Mallocing space\n");
-	if ((*A = malloc(rows * sizeof(double*))) == NULL){
-		printf("MALLOC ERROR!\n");
-		exit(1);
-	}
-	int i;
-	for (i = 0; i < rows; i++){
-		(*A)[i] = malloc(row_size * sizeof(double));
-	}
-	if (DEBUG_MAIN) printf("finished initing row buffer\n");
 }
 
 double * init_rank_vector(int size){

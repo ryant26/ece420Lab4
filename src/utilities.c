@@ -5,7 +5,7 @@
 #define DEBUG 0
 
 
-void init_edge_matrix(double **A, int* size){
+void init_edge_matrix(int **A, int* size){
 	FILE *fp;
 	int from_node,to_node;
 	int * edge_counts;
@@ -54,11 +54,11 @@ void init_edge_matrix(double **A, int* size){
 
 
 // Temporary until real matrix utilities
-double getValue(double *A, int row_size, int row, int column){
+int getValue(int *A, int row_size, int row, int column){
 	return A[(row_size*row)+column];
 }
 
-void setValue(double *A, int row_size, int row, int column, int value){
+void setValue(int *A, int row_size, int row, int column, int value){
 	if (DEBUG) printf("Setting value\n");
 	A[(row_size*row)+column] = value;
 }
