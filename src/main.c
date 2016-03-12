@@ -12,16 +12,11 @@
 #define D 0.85
 
 #define MASTER		0
-#define DEBUG_MAIN  1
+#define DEBUG_MAIN  0
 
 int main(int argc, char * argv[]){
 	int threads, rank, size, rows_per_thread, *graph;
 	double* rank_vector;
-
-	// Read graph data into memory
-	// Will be distributed across processes
-	// init_edge_matrix(&graph, &size);
-	// rank_vector = init_rank_vector(size);
 
 	MPI_Init(&argc, &argv);
 
@@ -29,26 +24,19 @@ int main(int argc, char * argv[]){
 	MPI_Comm_size(MPI_COMM_WORLD, &threads);
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-	// Read in the matrix and give each proc all the info it needs
-	if (rank == MASTER){
-		if (DEBUG_MAIN) printf("Reading in matrix\n");
-		init_edge_matrix(&graph, &size);
-		if (DEBUG_MAIN) printf("Finished reading in matrix\n");
-
-	} 
+	// ========================== Initialization and matrix read in ========================
+	if (rank == MASTER) init_edge_matrix(&graph, &size); 
 
 	//Broadcast the size to all processes
 	MPI_Bcast(&size, 1, MPI_INT, MASTER, MPI_COMM_WORLD);
 
 	// All processes init a rank_vector size = # nodes
-	rank_vector = init_rank_vector(size);	
+	rank_vector = init_process_rank_vector(size, 1/size);	
 	rows_per_thread = size / threads;
 
 	// Only the master holds the entire matrix (representing the graph)
 	// Thus all other processes init a matrix, size = total rows / threads = rows_per_thread
-	if (rank != MASTER){
-		graph = malloc(size * rows_per_thread * sizeof(int));
-	}
+	if (rank != MASTER) graph = malloc(size * rows_per_thread * sizeof(int));
 
 	// Now we scatter the original matrix (Representing the graph)
 	// to all processes
@@ -61,6 +49,9 @@ int main(int argc, char * argv[]){
 		MPI_Scatter(MPI_IN_PLACE, send_count, MPI_INT,
 				graph, send_count, MPI_INT, MASTER, MPI_COMM_WORLD);	
 	}
+
+
+	// ============================== Page Rank Implementation ================================
 
 	//Initialize looping variables
 	int above_threshold = 1;
@@ -111,31 +102,26 @@ int main(int argc, char * argv[]){
 						rank_vector, rows_per_thread, MPI_DOUBLE, MPI_COMM_WORLD);
 	}
 
+	// Output results
 	if(rank == MASTER){
 		Lab4_saveoutput(rank_vector, size, 10);
 	}
 
+	// Cleanup
 	MPI_Finalize();
 	free(rank_vector);
 	free(graph);
+	free(iteration_rank_results);
+	free(prevous_rank_vector);
 
 	return 0;
 }
 
-double * init_rank_vector(int size){
+// Initializes an array and sets all elements to a specific value
+double * init_process_rank_vector(int size, double value){
 	double * vect = malloc(size * sizeof(double));
-	double default_value = 1/size;
 	int i;
 	for (i =0; i < size; i++){
-		vect[i] = default_value;
-	}
-	return vect;
-}
-
-double * init_process_rank_vector(int nodes_proc, double value){
-	double * vect = malloc(nodes_proc * sizeof(double));
-	int i;
-	for (i =0; i < nodes_proc; i++){
 		vect[i] = value;
 	}
 	return vect;

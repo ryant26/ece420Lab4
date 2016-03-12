@@ -51,7 +51,6 @@ void init_edge_matrix(int **A, int* size){
 }	
 
 
-// Temporary until real matrix utilities
 int getValue(int *A, int row_size, int row, int column){
 	return A[(row_size*row)+column];
 }
