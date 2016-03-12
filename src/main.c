@@ -73,10 +73,10 @@ int main(int argc, char * argv[]){
 			}
 		}
 
-		long pointer_offset = rank * rows_per_thread * sizeof(double);
+		//long pointer_offset = rank * rows_per_thread * sizeof(double);
 		
 		// Sync results
-		MPI_Allgather(rank_vector + pointer_offset, rows_per_thread, MPI_DOUBLE,
+		MPI_Allgather(MPI_IN_PLACE, rows_per_thread, MPI_DOUBLE,
 						rank_vector, rows_per_thread, MPI_DOUBLE, MPI_COMM_WORLD);
 	}
 
