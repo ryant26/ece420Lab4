@@ -1,8 +1,8 @@
-# ECE 420 Lab 3
+# ECE 420 Lab 4
 ## Authors: Jared Cuglietta (1282916), Ryan Thornhill (1304096)
 
 ## Info
-This is a multithreaded implementation of the asynchronous Gauss-Jordan elimination 
+This is a MPI Implementation of Page Rank Algorithm
 
 ## How to build:
 From the main directory run 'make' to generate the main executable in the root directory.
