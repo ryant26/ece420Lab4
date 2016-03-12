@@ -2,9 +2,9 @@
 #include <stdio.h>
 #include <string.h>
 #include "utilities.h"
-#define DEBUG 0
 
-
+// Reads in the edge matrix
+// Handles the allocation of memory
 void init_edge_matrix(int **A, int* size){
 	FILE *fp;
 	int from_node,to_node;
@@ -22,41 +22,34 @@ void init_edge_matrix(int **A, int* size){
 	//Init edge countss array
 	edge_counts = calloc(*size, sizeof(int));
 
-	if (DEBUG) printf("Mallocing Memory\n");
-
 	// Allocate memory for array;
 	*A = calloc((*size) * (*size), sizeof(int));
-
-	if (DEBUG) printf("Importing edges into edge matrix\n");
 
 	while(!feof(fp)){
         fscanf(fp, "%d\t%d\n", &from_node, &to_node);
 		setValue(*A, *size, to_node, from_node, 1);
 
-		if (DEBUG) printf("Updating edge count\n");
 		edge_counts[from_node]++;
    	}
 
    	//Insert edge counts
-	if (DEBUG) printf("Inserting edge counts\n");
-
    	int i;
    	for (i = 0; i < *size * *size; i++){
    		if ((*A)[i] == 1) (*A)[i] = edge_counts[i % *size];
    	}
 
-	if (DEBUG) printf("Edge import complete\n");
+   	//Clean up
 	fclose(fp);
 	free(edge_counts);
 }	
 
-
+// gets a value from a row major array representing a matrix
 int getValue(int *A, int row_size, int row, int column){
 	return A[(row_size*row)+column];
 }
 
+// sets a value in a row major array representing a matrix
 void setValue(int *A, int row_size, int row, int column, int value){
-	if (DEBUG) printf("Setting value\n");
 	A[(row_size*row)+column] = value;
 }
 
