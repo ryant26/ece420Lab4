@@ -7,10 +7,11 @@
 #include <mpi.h>
 #include "utilities.h"
 
+// Contants
 #define E 0.00001
 #define D 0.85
-#define MASTER		0
 
+#define MASTER		0
 #define DEBUG_MAIN  1
 
 int main(int argc, char * argv[]){
@@ -31,7 +32,8 @@ int main(int argc, char * argv[]){
 	//Initialize looping variables
 	int above_threshold = 1;
 	rows_per_thread = size / threads;
-	double *prevous_rank_vector = init_previous_rank_vector(rank, rows_per_thread, 1/size);
+	double *prevous_rank_vector = init_process_rank_vector(rank, rows_per_thread, 1);
+	double *iteration_rank_results = init_process_rank_vector(rank, rows_per_thread, 1);
 
 	int j;
 
@@ -69,16 +71,28 @@ int main(int argc, char * argv[]){
 				// Calculate new rank
 				rank_sum *= D;
 				rank_sum += (1-D) * 1/size;
-				rank_vector[j] = rank_sum;
+				iteration_rank_results[normalized_j] = rank_sum;
 			}
 		}
-
-		//long pointer_offset = rank * rows_per_thread * sizeof(double);
 		
 		// Sync results
-		MPI_Allgather(MPI_IN_PLACE, rows_per_thread, MPI_DOUBLE,
+		MPI_Allgather(iteration_rank_results, rows_per_thread, MPI_DOUBLE,
 						rank_vector, rows_per_thread, MPI_DOUBLE, MPI_COMM_WORLD);
 	}
+
+	// Wait for all proceses to complete
+	MPI_Barrier(MPI_COMM_WORLD);
+
+	// Sync final results
+	MPI_Allgather(iteration_rank_results, rows_per_thread, MPI_DOUBLE,		
+		rank_vector, rows_per_thread, MPI_DOUBLE, MPI_COMM_WORLD);
+
+	if(rank == MASTER){
+		Lab4_saveoutput(rank_vector, size, 10);
+	}
+
+	MPI_Finalize();
+	printf("All done!\n");
 
 	return 0;
 }
@@ -93,7 +107,7 @@ double * init_rank_vector(int size){
 	return vect;
 }
 
-double * init_previous_rank_vector(int process_rank, int nodes_proc, double value){
+double * init_process_rank_vector(int process_rank, int nodes_proc, double value){
 	double * vect = malloc(nodes_proc * sizeof(double));
 	int i;
 	for (i =0; i < nodes_proc; i++){

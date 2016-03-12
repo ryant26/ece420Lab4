@@ -7,7 +7,7 @@ BIN = bin
 
 default: checkdirs submission
 
-all: checkdirs datatrim main
+all: checkdirs datatrim main serialtester
 
 $(BUILDDIR)/%.o: %.c
 	$(CC) -c -o $@ $< $(CFLAGS)
@@ -21,7 +21,7 @@ main: $(BUILDDIR)/main.o $(BUILDDIR)/Lab4_IO.o $(BUILDDIR)/utilities.o
 datatrim: build/datatrim.o Lab4_IO.o
 	$(CC) -o $(BIN)/datatrim $^ $(CFLAGS)
 
-serialtester: build/Lab3IO.o build/serialtester.o 
+serialtester: $(BUILDDIR)/Lab4_IO.o build/serialtester.o 
 	$(CC) -o $(BIN)/serialtester $^ $(CFLAGS)
 
 checkdirs: $(BUILDDIR) $(BIN)
