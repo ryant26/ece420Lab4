@@ -16,7 +16,7 @@
 
 int main(int argc, char * argv[]){
 	int threads, rank, size, rows_per_thread, *graph;
-	double* rank_vector;
+	double* rank_vector, start_time, end_time;
 
 	MPI_Init(&argc, &argv);
 
@@ -53,6 +53,9 @@ int main(int argc, char * argv[]){
 
 	// ============================== Page Rank Implementation ================================
 
+	// Start timer
+	if (rank == MASTER) GET_TIME(start_time);
+
 	//Initialize looping variables
 	int above_threshold = 1;
 	
@@ -79,7 +82,7 @@ int main(int argc, char * argv[]){
 				int j;
 				int outgoing_edges = 0;
 
-				// Move down the column and add nodes which have an edge to us
+				// Move down the row and add nodes which have an edge to us
 				// rank_sum = sum(rank(i)/L(i))
 				for (j = 0; j < size; j++){
 					if ( (outgoing_edges = graph[(i * size) + j]) ){
@@ -104,7 +107,9 @@ int main(int argc, char * argv[]){
 
 	// Output results
 	if(rank == MASTER){
-		Lab4_saveoutput(rank_vector, size, 10);
+		GET_TIME(end_time);
+		Lab4_saveoutput(rank_vector, size, end_time - start_time);
+		printf("Ellapsed Time: %lf \n", end_time - start_time);
 	}
 
 	// Cleanup
@@ -115,14 +120,4 @@ int main(int argc, char * argv[]){
 	free(prevous_rank_vector);
 
 	return 0;
-}
-
-// Initializes an array and sets all elements to a specific value
-double * init_process_rank_vector(int size, double value){
-	double * vect = malloc(size * sizeof(double));
-	int i;
-	for (i =0; i < size; i++){
-		vect[i] = value;
-	}
-	return vect;
 }

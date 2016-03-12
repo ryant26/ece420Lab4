@@ -59,3 +59,13 @@ void setValue(int *A, int row_size, int row, int column, int value){
 	if (DEBUG) printf("Setting value\n");
 	A[(row_size*row)+column] = value;
 }
+
+// Initializes an array and sets all elements to a specific value
+double * init_process_rank_vector(int size, double value){
+	double * vect = malloc(size * sizeof(double));
+	int i;
+	for (i =0; i < size; i++){
+		vect[i] = value;
+	}
+	return vect;
+}

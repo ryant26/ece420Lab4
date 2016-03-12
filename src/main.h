@@ -2,6 +2,5 @@
 #define MAIN_H
 
 void init_row_buffer(double ***, int, int);
-double * init_process_rank_vector(int, double);
 
 #endif
