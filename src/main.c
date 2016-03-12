@@ -21,20 +21,17 @@ int main(int argc, char * argv[]){
 	MPI_Comm_size(MPI_COMM_WORLD, &threads);
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-	double ** row_buffer;
-	rows_per_thread = size / threads;
-	init_row_buffer(&row_buffer, size, rows_per_thread);
-
-	MPI_Scatter(graph, rows_per_thread, MPI_DOUBLE,
-		&row_buffer, rows_per_thread, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-
-
 	if (rank == MASTER){
-				
+		printf("Hello from master, there are %d Processes. \n", threads);
+		int i;
+		for (i = 0; i < 15; i++){
+			printf("Graph[%d]: %lf\n", i*size, graph[i*size]);
+		}		
 	} else {
-
+		printf("Hello from: %d \n", rank);	
 	}
-	MPI_Finalize();
+
+	MPI_Finalize();		
 	return 0;
 }
 
