@@ -109,7 +109,6 @@ int main(int argc, char * argv[]){
 	if(rank == MASTER){
 		GET_TIME(end_time);
 		Lab4_saveoutput(rank_vector, size, end_time - start_time);
-		printf("Ellapsed Time: %lf \n", end_time - start_time);
 	}
 
 	// Cleanup

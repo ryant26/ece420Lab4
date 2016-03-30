@@ -1,5 +1,5 @@
 CC := mpicc
-CFLAGS := -lm -Wall -Wno-unused-result
+CFLAGS := -lm
 
 VPATH = src:sdk
 BUILDDIR = build
@@ -12,13 +12,13 @@ all: checkdirs datatrim main serialtester
 $(BUILDDIR)/%.o: %.c
 	$(CC) -c -o $@ $< $(CFLAGS)
 
-submission: $(BUILDDIR)/main.o $(BUILDDIR)/utilities.o $(BUILDDIR)/Lab3IO.o
+submission: $(BUILDDIR)/main.o $(BUILDDIR)/utilities.o $(BUILDDIR)/Lab4_IO.o
 	$(CC) -o main $^ $(CFLAGS)
 
 main: $(BUILDDIR)/main.o $(BUILDDIR)/Lab4_IO.o $(BUILDDIR)/utilities.o
 	$(CC) -o $(BIN)/main $^ $(CFLAGS)
 
-datatrim: build/datatrim.o Lab4_IO.o
+datatrim: $(BUILDDIR)/datatrim.o $(BUILDDIR)/Lab4_IO.o
 	$(CC) -o $(BIN)/datatrim $^ $(CFLAGS)
 
 serialtester: $(BUILDDIR)/Lab4_IO.o build/serialtester.o 
